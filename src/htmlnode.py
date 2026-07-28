@@ -64,3 +64,27 @@ class LeafNode(HTMLNode):
         sentence2 = f"and props {self.props}"
 
         return f"{sentence1} \n {sentence2}"
+
+
+class ParentNode(HTMLNode):
+    def __init__(
+        self,
+        tag: str | None,
+        children: list["HTMLNode"] | None,
+        props: dict[str, str] | None = None,
+    ) -> None:
+        super().__init__(tag, children=children, props=props)
+
+    def to_html(self):
+        if self.tag is None:
+            raise ValueError("Missing Tag")
+        if self.children is None:
+            raise ValueError("Missing Child")
+
+        else:
+            web = f"<{self.tag}>"
+            web2 = ""
+            for child in self.children:
+                web2 += child.to_html()
+            web3 = f"</{self.tag}>"
+            return web + web2 + web3
