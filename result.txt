@@ -1,0 +1,37 @@
+.E...F...............
+======================================================================
+ERROR: test_codeblock (test_helpers.TestHelpers.test_codeblock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/kcesar/bootdev-workspace/static_site/src/test_helpers.py", line 181, in test_codeblock
+    node = markdown_to_html_node(md)
+  File "/home/kcesar/bootdev-workspace/static_site/src/helpers.py", line 290, in markdown_to_html_node
+    text_nodes = text_to_textnodes(text)
+  File "/home/kcesar/bootdev-workspace/static_site/src/helpers.py", line 120, in text_to_textnodes
+    lista = split_nodes_delimiter(lista, "`", TextType.CODE)
+  File "/home/kcesar/bootdev-workspace/static_site/src/helpers.py", line 42, in split_nodes_delimiter
+    raise Exception("invalid Markdown syntax")
+Exception: invalid Markdown syntax
+
+======================================================================
+FAIL: test_paragraphs (test_helpers.TestHelpers.test_paragraphs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/kcesar/bootdev-workspace/static_site/src/test_helpers.py", line 168, in test_paragraphs
+    self.assertEqual(
+    ~~~~~~~~~~~~~~~~^
+        html,
+        ^^^^^
+        "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+AssertionError: '<html><body></body></html>' != '<div><p>This is <b>bolded</b> paragraph te[107 chars]div>'
+- <html><body></body></html>
++ <div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>
+
+
+----------------------------------------------------------------------
+Ran 21 tests in 0.004s
+
+FAILED (failures=1, errors=1)

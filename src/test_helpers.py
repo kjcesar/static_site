@@ -7,6 +7,9 @@ from helpers import (
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
+    markdown_to_blocks,
+    markdown_to_html_node,
 )
 
 
@@ -104,3 +107,103 @@ class TestHelpers(unittest.TestCase):
             ],
             new_nodes,
         )
+
+    def test_text_to_textnodes(self):
+        example_text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        example_output = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode(
+                "obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"
+            ),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+        self.assertListEqual(example_output, text_to_textnodes(example_text))
+
+    def test_markdown_to_blocks(self):
+        md = """
+            This is **bolded** paragraph
+
+            This is another paragraph with _italic_ text and `code` here
+            This is the same paragraph on a new line
+
+            - This is a list
+            - with items
+
+            1. this is a list
+            2. but with order
+
+
+
+            """
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+                "1. this is a list\n2. but with order",
+            ],
+        )
+
+    def test_paragraphs(self):
+        md = """
+    This is **bolded** paragraph
+    text in a p
+    tag here
+
+    This is another paragraph with _italic_ text and `code` here
+
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><p>This is <b>bolded</b> paragraph text in a p tag here</p><p>This is another paragraph with <i>italic</i> text and <code>code</code> here</p></div>",
+        )
+
+    def test_codeblock(self):
+        md = """
+    ```
+    This is text that _should_ remain
+    the **same** even with inline stuff
+    ```
+    """
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
+        )
+
+
+# TODO: markdown_to_html_node() tests
+# [x] Test paragraphs
+# [ ] Test code blocks
+#     [ ] Verify <pre><code>...</code></pre>
+#     [ ] Verify code does not interpret inline Markdown
+#     [ ] Verify newlines are preserved
+# [ ] Test headings
+#     [ ] Test h1
+#     [ ] Test different heading levels
+#     [ ] Test inline Markdown inside headings
+# [ ] Test block quotes
+#     [ ] Test single-line quote
+#     [ ] Test multi-line quote
+# [ ] Test unordered lists
+#     [ ] Test multiple items
+#     [ ] Test inline Markdown inside items
+# [ ] Test ordered lists
+#     [ ] Test multiple items
+#     [ ] Test inline Markdown inside items
+# [ ] Test a document containing multiple block types
+# [ ] Test edge cases / malformed Markdown where applicable
