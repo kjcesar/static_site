@@ -186,24 +186,10 @@ class TestHelpers(unittest.TestCase):
         )
 
 
-# TODO: markdown_to_html_node() tests
-# [x] Test paragraphs
-# [ ] Test code blocks
-#     [ ] Verify <pre><code>...</code></pre>
-#     [ ] Verify code does not interpret inline Markdown
-#     [ ] Verify newlines are preserved
-# [ ] Test headings
-#     [ ] Test h1
-#     [ ] Test different heading levels
-#     [ ] Test inline Markdown inside headings
-# [ ] Test block quotes
-#     [ ] Test single-line quote
-#     [ ] Test multi-line quote
-# [ ] Test unordered lists
-#     [ ] Test multiple items
-#     [ ] Test inline Markdown inside items
-# [ ] Test ordered lists
-#     [ ] Test multiple items
-#     [ ] Test inline Markdown inside items
-# [ ] Test a document containing multiple block types
-# [ ] Test edge cases / malformed Markdown where applicable
+# TODO: Test code blocks - verify <pre><code>...</code></pre>, code does not interpret inline Markdown, newlines are preserved
+# TODO: Test headings - test h1, different heading levels, inline Markdown inside headings
+# TODO: Test block quotes - single-line quote, multi-line quote
+# TODO: Test unordered lists - multiple items, inline Markdown inside items
+# TODO: Test ordered lists - multiple items, inline Markdown inside items
+# TODO: Test a document containing multiple block types
+# TODO: Test edge cases / malformed Markdown where applicable

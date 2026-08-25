@@ -302,39 +302,16 @@ def markdown_to_html_node(markdown) -> ParentNode:
 
             super_papa.children.append(parent)
         elif block_type == BlockType.CODE:
+            # TODO: Remove ``` delimiters, preserve internal newlines, create <code> node, wrap in <pre>
             text = block[4:-3]
             parent = ParentNode(
                 block_to_tag(block_type), children=[LeafNode("code", text)]
             )
 
             super_papa.children.append(parent)
+        # TODO: Implement QUOTE - remove > markers, handle multiple lines
+        # TODO: Implement HEADING - remove # prefix, determine heading level, process inline Markdown
+        # TODO: Implement UNORDERED_LIST - process items, create <li> nodes, wrap in <ul>
+        # TODO: Implement ORDERED_LIST - process items, create <li> nodes, wrap in <ol>
 
     return super_papa
-
-
-# TODO: markdown_to_html_node()
-# [x] Create root ParentNode
-# [x] Iterate through blocks
-# [x] Determine BlockType for each block
-# [x] Implement PARAGRAPH
-# [ ] Implement CODE
-#     [ ] Remove ``` delimiters
-#     [ ] Preserve internal newlines
-#     [ ] Create <code> node
-#     [ ] Wrap <code> in <pre>
-# [ ] Implement HEADING
-#     [ ] Remove # prefix
-#     [ ] Determine heading level
-#     [ ] Process inline Markdown
-# [ ] Implement QUOTE
-#     [ ] Remove > markers
-#     [ ] Determine handling of multiple lines
-# [ ] Implement UNORDERED_LIST
-#     [ ] Process individual list items
-#     [ ] Create <li> nodes
-#     [ ] Wrap items in <ul>
-# [ ] Implement ORDERED_LIST
-#     [ ] Process individual list items
-#     [ ] Create <li> nodes
-#     [ ] Wrap items in <ol>
-# [ ] Return root ParentNode
