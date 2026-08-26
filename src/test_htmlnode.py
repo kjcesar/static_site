@@ -55,6 +55,49 @@ class TestHTMLNode(unittest.TestCase):
             "<div><span><b>grandchild</b></span></div>",
         )
 
+    def test_leaf_none(self):
+        node = LeafNode(None, "some_value")
+        self.assertEqual("some_value", node.to_html())
+
+    def test_leaf_none_value(self):
+        with self.assertRaises(ValueError) as context:
+            LeafNode("div", None).to_html()
+
+        self.assertEqual(str(context.exception), "All leaf nodes must have a value.")
+
+    def test_parent_none_tag(self):
+        """
+        if self.tag is None:
+            raise ValueError("Missing Tag")
+        if self.children is None:
+            raise ValueError("Missing Child")
+        """
+        child_node = LeafNode("span", "child")
+        with self.assertRaises(ValueError) as context:
+            ParentNode(None, [child_node]).to_html()
+
+        self.assertEqual(str(context.exception), "Missing Tag")
+
+    def test_parent_none_value(self):
+        """
+        if self.tag is None:
+            raise ValueError("Missing Tag")
+        if self.children is None:
+            raise ValueError("Missing Child")
+        """
+        with self.assertRaises(ValueError) as context:
+            ParentNode("p", None).to_html()
+
+        self.assertEqual(str(context.exception), "Missing Child")
+
+    def test_leaf_with_props(self):
+        node = LeafNode("img", "some_value", props={"src": "url.png"})
+
+        self.assertEqual(
+            node.to_html(),
+            '<img src="url.png" >some_value</img>',
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
