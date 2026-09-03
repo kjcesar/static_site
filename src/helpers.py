@@ -1,11 +1,8 @@
-import htmlnode
 from textnode import TextType, TextNode
 from htmlnode import ParentNode
 from block import BlockType
 from htmlnode import LeafNode
 import re
-
-import textnode
 
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
@@ -18,9 +15,13 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     elif text_node.text_type == TextType.CODE:
         return LeafNode("code", text_node.text)
     elif text_node.text_type == TextType.IMAGE:
-        return LeafNode("img", text_node.text)
+        if text_node.url is None:
+            raise Exception("Invalid Url")  # testing
+        return LeafNode("img", text_node.text, props={"src": text_node.url})
     elif text_node.text_type == TextType.LINK:
-        return LeafNode("link", text_node.text)
+        if text_node.url is None:
+            raise Exception("Invalid Url")  # testing
+        return LeafNode("a", text_node.text, props={"href": text_node.url})
 
     else:
         raise ValueError(f"Unknown text type: {text_node.text_type}")
@@ -152,6 +153,7 @@ def is_heading(block) -> dict[str, bool | int]:
         for c in block:
             if c == "#":
                 turnable["number_of_#"] += 1
+                continue  # to check if there is # still
             if c == " ":
                 found_space = True
                 continue  # to check if there is heading text
@@ -176,7 +178,7 @@ def is_code(block):
 
 
 def is_quote(block):
-    if block.startswith(">") and block.endswith("<"):
+    if block.startswith("> "):
         return True
     else:
         return False
@@ -284,7 +286,7 @@ def markdown_to_html_node(markdown) -> ParentNode:
 
         What part is block-level parsing, and what part can I delegate to text_to_textnodes()?
     """
-    blocks = markdown_to_blocks(markdown)
+    blocks = markdown_to_blocks(markdown)  # spliting markdowns into blocks
     # crear ParentNode Exterior
     super_papa = ParentNode("div", children=[])
     for block in blocks:
@@ -302,16 +304,49 @@ def markdown_to_html_node(markdown) -> ParentNode:
 
             super_papa.children.append(parent)
         elif block_type == BlockType.CODE:
-            # TODO: Remove ``` delimiters, preserve internal newlines, create <code> node, wrap in <pre>
             text = block[4:-3]
             parent = ParentNode(
                 block_to_tag(block_type), children=[LeafNode("code", text)]
             )
-
             super_papa.children.append(parent)
-        # TODO: Implement QUOTE - remove > markers, handle multiple lines
-        # TODO: Implement HEADING - remove # prefix, determine heading level, process inline Markdown
-        # TODO: Implement UNORDERED_LIST - process items, create <li> nodes, wrap in <ul>
-        # TODO: Implement ORDERED_LIST - process items, create <li> nodes, wrap in <ol>
+        elif block_type == BlockType.HEADING:
+            level = is_heading(block)["number_of_#"]
+            text = block[level + 1 :]  # removing # prefix
+            nodes = text_to_textnodes(text)
+            parent = ParentNode(block_to_tag(block_type, level), children=[])
+            for node in nodes:
+                parent.children.append(text_node_to_html_node(node))
+            super_papa.children.append(parent)
+        elif block_type == BlockType.QUOTE:
+            lines = [line[2:] for line in block.split("\n")]
+            text = " ".join(lines)
+            nodes = text_to_textnodes(text)
+            parent = ParentNode(block_to_tag(block_type), children=[])
+            for node in nodes:
+                parent.children.append(text_node_to_html_node(node))
+            super_papa.children.append(parent)
+        elif block_type == BlockType.UNORDERED_LIST:
+            parent = ParentNode(block_to_tag(block_type), children=[])
+            lines = [line[2:] for line in block.split("\n")]
+            for line in lines:
+                text = line
+                list_object = ParentNode("li", children=[])
+                nodes = text_to_textnodes(text)
+                for node in nodes:
+                    list_object.children.append(text_node_to_html_node(node))
+                parent.children.append(list_object)
+            super_papa.children.append(parent)
+        elif block_type == BlockType.ORDERED_LIST:
+            # TODO: Implement ORDERED_LIST - process items, create <li> nodes, wrap in <ol>
+            parent = ParentNode(block_to_tag(block_type), children=[])
+            lines = block.split("\n")
+            for line in lines:
+                text = line.split(". ", 1)[1]
+                list_object = ParentNode("li", children=[])
+                nodes = text_to_textnodes(text)
+                for node in nodes:
+                    list_object.children.append(text_node_to_html_node(node))
+                parent.children.append(list_object)
+            super_papa.children.append(parent)
 
     return super_papa

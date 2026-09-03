@@ -26,6 +26,16 @@ class TestHelpers(unittest.TestCase):
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "This is a bold text node")
 
+    def test_headings(self):
+        md = """
+            ### This is a _heading_
+            """
+        node = markdown_to_html_node(md)
+        self.assertEqual(
+            node.to_html(),
+            "<div><h3>This is a <i>heading</i></h3></div>",
+        )
+
     def test_split_nodes_delimiter(self):
         node = TextNode("This is text with a `code block` word", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
@@ -185,11 +195,106 @@ class TestHelpers(unittest.TestCase):
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
 
+    def test_quotes(self):
+        md = """
+> This is a quote
+> with two lines
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is a quote with two lines</blockquote></div>",
+        )
 
-# TODO: Test code blocks - verify <pre><code>...</code></pre>, code does not interpret inline Markdown, newlines are preserved
-# TODO: Test headings - test h1, different heading levels, inline Markdown inside headings
-# TODO: Test block quotes - single-line quote, multi-line quote
-# TODO: Test unordered lists - multiple items, inline Markdown inside items
-# TODO: Test ordered lists - multiple items, inline Markdown inside items
-# TODO: Test a document containing multiple block types
-# TODO: Test edge cases / malformed Markdown where applicable
+    def test_quotes_inline_markdown(self):
+        md = """
+> This is a **bold quote**
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>This is a <b>bold quote</b></blockquote></div>",
+        )
+
+    def test_unordered_list(self):
+        md = """
+- item 1
+- item 2
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>item 1</li><li>item 2</li></ul></div>",
+        )
+
+    def test_unordered_list_inline_markdown(self):
+        md = """
+- item 1
+- **bold item**
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>item 1</li><li><b>bold item</b></li></ul></div>",
+        )
+
+    def test_unordered_list_with_hyphens(self):
+        md = """
+- item-one
+- item-two-three
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li>item-one</li><li>item-two-three</li></ul></div>",
+        )
+
+    def test_unordered_list_multiple_inline_markdown(self):
+        md = """
+- **bold** and _italic_
+- `code` and [link](https://example.com)
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ul><li><b>bold</b> and <i>italic</i></li><li><code>code</code> and <a href=\"https://example.com\">link</a></li></ul></div>",
+        )
+
+    def test_ordered_list(self):
+        md = """
+1. first item
+2. second item
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><ol><li>first item</li><li>second item</li></ol></div>",
+        )
+
+    def test_full_document(self):
+        md = """
+# Heading
+
+This is a paragraph with **bold** text
+
+> A quote
+
+- item 1
+- item 2
+
+1. one
+2. two
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><h1>Heading</h1><p>This is a paragraph with <b>bold</b> text</p><blockquote>A quote</blockquote><ul><li>item 1</li><li>item 2</li></ul><ol><li>one</li><li>two</li></ol></div>",
+        )

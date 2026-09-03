@@ -31,8 +31,9 @@ class HTMLNode:
         if self.props is None:
             return ""
         string_to_return = " "
-        for attribute_name, attribute_value in self.props.items():
-            string_to_return += attribute_name + "=" + '"' + attribute_value + '"' + " "
+        attributes = [f'{k}="{v}"' for k, v in self.props.items()]
+
+        string_to_return += " ".join(attributes)
 
         return string_to_return
 
@@ -73,9 +74,10 @@ class ParentNode(HTMLNode):
     def __init__(
         self,
         tag: str | None,
-        children: list["HTMLNode"] | None,
+        children: list["HTMLNode"],
         props: dict[str, str] | None = None,
     ) -> None:
+        self.children: list["HTMLNode"] = children
         super().__init__(tag, children=children, props=props)
 
     def to_html(self):
