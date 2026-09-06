@@ -61,8 +61,8 @@ def generate_page(from_path, template_path, dest_path, basepath):
     full_html = (
         template.replace("{{ Title }}", title)
         .replace("{{ Content }}", markdown_to_html)
-        .replace('href="/', 'href="{basepath}')
-        .replace('src="/', 'src="{basepath}')
+        .replace('href="/', f'href="{basepath}')
+        .replace('src="/', f'src="{basepath}')
     )
 
     # Write full HTML page to dest_path (create dirs if needed)
