@@ -5,6 +5,20 @@ from htmlnode import LeafNode
 import re
 
 
+def extract_title(markdown):
+    """
+    It should pull the h1 header from the markdown file
+    (the line that starts with a single #) and return it.
+    """
+    result = re.findall("^#(.+)", markdown, re.MULTILINE)
+
+    if not result:
+        raise Exception("No h1 header on markdown")
+
+    title = result[0].strip()
+    return title
+
+
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     if text_node.text_type == TextType.TEXT:
         return LeafNode(None, text_node.text)
@@ -60,7 +74,7 @@ def extract_markdown_images(text):
 
 
 def extract_markdown_links(text):
-    matches = re.findall(r" \[(.*?)\]\((.*?)\)", text)
+    matches = re.findall(r"\[(.*?)\]\((.*?)\)", text)
     return matches
 
 

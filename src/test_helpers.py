@@ -10,10 +10,16 @@ from helpers import (
     text_to_textnodes,
     markdown_to_blocks,
     markdown_to_html_node,
+    extract_title,
 )
 
 
 class TestHelpers(unittest.TestCase):
+    def test_extract_title(self):
+        title = "Hello"
+        self.assertEqual(title, extract_title("# Hello"))
+        self.assertEqual(title, extract_title("some text\n\n# Hello"))
+
     def test_text(self):
         node = TextNode("This is a text node", TextType.TEXT)
         html_node = text_node_to_html_node(node)
@@ -263,7 +269,7 @@ class TestHelpers(unittest.TestCase):
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><ul><li><b>bold</b> and <i>italic</i></li><li><code>code</code> and <a href=\"https://example.com\">link</a></li></ul></div>",
+            '<div><ul><li><b>bold</b> and <i>italic</i></li><li><code>code</code> and <a href="https://example.com">link</a></li></ul></div>',
         )
 
     def test_ordered_list(self):
